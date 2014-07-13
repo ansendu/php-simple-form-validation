@@ -3,6 +3,9 @@ php-simple-form-validation
 
 PHP Simple Form Validation
 
+##Requirements
+php5.3+
+
 ##How to use
 
 
