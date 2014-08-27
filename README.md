@@ -13,15 +13,15 @@ php5.3+
 
 ```
 $filter = array(
-    array('name', 'require', '请输入姓名'),
+    array('name', 'required', '请输入姓名'),
     array('age', 'lt', 2, '年龄必须小于2'),
-    array('level', 'require,egt', 10, '等级必须大于10才能领取'),
+    array('level', 'required,egt', 10, '等级必须大于10才能领取'),
     array('email', 'email', 'Email格式不正确'),
 
-    array('pack', 'require', '背包必填'),
+    array('pack', 'required', '背包必填'),
     array('pack', 'regexp', '\w+', '背包输入格式有误'),
 
-    array('type', 'require,in', array(1, 2, 3), '类型选择错误'),
+    array('type', 'required,in', array(1, 2, 3), '类型选择错误'),
 
     array('school', 'callback', function ($data) {
         return $data == 'Tsinghua';
