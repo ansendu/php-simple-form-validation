@@ -356,8 +356,13 @@ class Validation
      * @return mixed
      */
     public static function firstError($intact = false) {
-        $error_array = array_shift(self::$error);
-        return $intact ? $error_array : $error_array[1];
+        if (self::$error) {
+            $error_array = array_shift(self::$error);
+
+            return $intact ? $error_array : $error_array[1];
+        }
+
+        return NULL;
     }
 
 }
