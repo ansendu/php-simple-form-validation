@@ -77,7 +77,7 @@ class Validation
             }
         }
 
-        return !boolval(count(self::$error));
+        return !count(self::$error);
     }
 
 
