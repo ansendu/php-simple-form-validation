@@ -71,7 +71,7 @@ class Validation
                     self::$error[] = array($field, $error);
                 }
             } else {
-                if (in_array('require', $rules)) {
+                if (in_array('required', $rules)) {
                     self::$error[] = array($field, $error);
                 }
             }
@@ -139,7 +139,7 @@ class Validation
             case 'in':
                 return self::inMatcher($data, $third);
                 break;
-            case 'require':
+            case 'required':
                 return !is_null($data);
                 break;
             case 'callback':
