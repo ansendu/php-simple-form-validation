@@ -6,7 +6,7 @@
  * Author:Wudi <0x07de@gmail.com>
  * Date: 2014-07-13
  */
-class Validation
+class Validator
 {
 
     /**
@@ -26,9 +26,16 @@ class Validation
 
 
     /**
+     * @var
+     */
+    private static $_data;
+
+
+    /**
      * @param array $filter
      */
-    public static function registerFilter(array $filter = array()) {
+    public static function registerFilter(array $filter = array())
+    {
         self::$filter += $filter;
     }
 
@@ -40,7 +47,9 @@ class Validation
      * @param array $filter
      * @return bool
      */
-    public static function execute(array $data, array $filter = array()) {
+    public static function execute(array $data, array $filter = array())
+    {
+        self::$_data = $data;
 
         count($filter) && self::registerFilter($filter);
 
@@ -68,11 +77,11 @@ class Validation
                     continue;
                 } else {
                     //var_dump($error);
-                    self::$error[] = array($field, $error);
+                    self::$error[$field] = $error;
                 }
             } else {
                 if (in_array('required', $rules)) {
-                    self::$error[] = array($field, $error);
+                    self::$error[$field] = $error;
                 }
             }
         }
@@ -89,7 +98,8 @@ class Validation
      * @param $data
      * @return bool|mixed
      */
-    public static function validate($rule_type, $matcher, $data) {
+    public static function validate($rule_type, $matcher, $data)
+    {
 
         $third = array_shift($matcher); //Third item as params1
 
@@ -145,6 +155,12 @@ class Validation
             case 'callback':
                 return self::callbackMatcher($data, $third);
                 break;
+            case 'inner_eq':
+                $filed_data = & self::$_data[$third];
+                return $data == $filed_data;
+            case 'inner_neq':
+                $filed_data = & self::$_data[$third];
+                return $data != $filed_data;
             default:
                 return false;
         }
@@ -157,7 +173,8 @@ class Validation
      * @param $pattern
      * @return mixed
      */
-    public static function regexpMatcher($data, $pattern) {
+    public static function regexpMatcher($data, $pattern)
+    {
         return filter_var($data, FILTER_VALIDATE_REGEXP, array(
             'options' => array(
                 'regexp' => "/^{$pattern}$/i"
@@ -172,7 +189,8 @@ class Validation
      * @param $data
      * @return mixed
      */
-    public static function ipMatcher($data) {
+    public static function ipMatcher($data)
+    {
         return filter_var($data, FILTER_VALIDATE_IP);
     }
 
@@ -182,7 +200,8 @@ class Validation
      * @param $data
      * @return mixed
      */
-    public static function emailMatcher($data) {
+    public static function emailMatcher($data)
+    {
         return filter_var($data, FILTER_VALIDATE_EMAIL);
     }
 
@@ -193,7 +212,8 @@ class Validation
      * @param $data
      * @return mixed
      */
-    public static function urlMatcher($data) {
+    public static function urlMatcher($data)
+    {
         return filter_var($data, FILTER_VALIDATE_URL);
     }
 
@@ -204,7 +224,8 @@ class Validation
      * @param $data
      * @return bool
      */
-    public static function intMatcher($data) {
+    public static function intMatcher($data)
+    {
         return is_int($data);
     }
 
@@ -215,7 +236,8 @@ class Validation
      * @param $data
      * @return bool
      */
-    public static function floatMatcher($data) {
+    public static function floatMatcher($data)
+    {
         return is_float($data);
     }
 
@@ -226,7 +248,8 @@ class Validation
      * @param $data
      * @return bool
      */
-    public static function arrayMatcher($data) {
+    public static function arrayMatcher($data)
+    {
         return is_array($data);
     }
 
@@ -237,7 +260,8 @@ class Validation
      * @param $data
      * @return bool
      */
-    public static function numberMatcher($data) {
+    public static function numberMatcher($data)
+    {
         return is_numeric($data);
     }
 
@@ -248,7 +272,8 @@ class Validation
      * @param $target
      * @return bool
      */
-    public static function ltMatcher($data, $target) {
+    public static function ltMatcher($data, $target)
+    {
         return $data < $target;
     }
 
@@ -259,7 +284,8 @@ class Validation
      * @param $target
      * @return bool
      */
-    public static function eltMatcher($data, $target) {
+    public static function eltMatcher($data, $target)
+    {
         return $data <= $target;
     }
 
@@ -270,7 +296,8 @@ class Validation
      * @param $target
      * @return bool
      */
-    public static function gtMatcher($data, $target) {
+    public static function gtMatcher($data, $target)
+    {
         return $data > $target;
     }
 
@@ -281,7 +308,8 @@ class Validation
      * @param $target
      * @return bool
      */
-    public static function egtMatcher($data, $target) {
+    public static function egtMatcher($data, $target)
+    {
         return $data >= $target;
     }
 
@@ -292,7 +320,8 @@ class Validation
      * @param $target
      * @return bool
      */
-    public static function eqMatcher($data, $target) {
+    public static function eqMatcher($data, $target)
+    {
         return $data >= $target;
     }
 
@@ -303,7 +332,8 @@ class Validation
      * @param $target
      * @return bool
      */
-    public static function neqMatcher($data, $target) {
+    public static function neqMatcher($data, $target)
+    {
         return $data >= $target;
     }
 
@@ -314,7 +344,8 @@ class Validation
      * @param array $target
      * @return bool
      */
-    public static function inMatcher($data, array $target) {
+    public static function inMatcher($data, array $target)
+    {
         return in_array($data, $target);
     }
 
@@ -326,11 +357,24 @@ class Validation
      * @param $function
      * @return bool|mixed
      */
-    public static function callbackMatcher($data, $function) {
+    public static function callbackMatcher($data, $function)
+    {
         if (is_callable($function)) {
             return call_user_func($function, $data);
         }
+
         return false;
+    }
+
+    /**
+     * 获取字段数据
+     *
+     * @param $field
+     * @return null
+     */
+    public static function getField($field)
+    {
+        return isset(self::$_data[$field]) ? self::$_data[$field] : NULL;
     }
 
 
@@ -340,11 +384,14 @@ class Validation
      * @param null $filed
      * @return array
      */
-    public static function error($filed = NULL) {
+    public static function error($filed = NULL)
+    {
         if (is_string($filed)) {
             $error = & self::$error[$filed];
+
             return $error;
         }
+
         return self::$error;
     }
 
@@ -355,11 +402,10 @@ class Validation
      * @param bool $intact
      * @return mixed
      */
-    public static function firstError($intact = false) {
-        if (self::$error) {
-            $error_array = array_shift(self::$error);
-
-            return $intact ? $error_array : $error_array[1];
+    public static function firstError($intact = false)
+    {
+        if (count(self::$error)) {
+            return  array_shift(self::$error);
         }
 
         return NULL;
