@@ -2,7 +2,6 @@
 
 /**
  * Validation
- *
  * Author:Wudi <0x07de@gmail.com>
  * Date: 2014-07-13
  */
@@ -45,6 +44,7 @@ class Validator
      *
      * @param array $data
      * @param array $filter
+     *
      * @return bool
      */
     public static function execute(array $data, array $filter = array())
@@ -96,6 +96,7 @@ class Validator
      * @param $rule_type
      * @param $matcher
      * @param $data
+     *
      * @return bool|mixed
      */
     public static function validate($rule_type, $matcher, $data)
@@ -156,10 +157,10 @@ class Validator
                 return self::callbackMatcher($data, $third);
                 break;
             case 'inner_eq':
-                $filed_data = & self::$_data[$third];
+                $filed_data = &self::$_data[$third];
                 return $data == $filed_data;
             case 'inner_neq':
-                $filed_data = & self::$_data[$third];
+                $filed_data = &self::$_data[$third];
                 return $data != $filed_data;
             default:
                 return false;
@@ -171,15 +172,12 @@ class Validator
     /**
      * @param $data
      * @param $pattern
+     *
      * @return mixed
      */
     public static function regexpMatcher($data, $pattern)
     {
-        return filter_var($data, FILTER_VALIDATE_REGEXP, array(
-            'options' => array(
-                'regexp' => "/^{$pattern}$/i"
-            )
-        ));
+        return preg_match($pattern, $data);
     }
 
 
@@ -187,6 +185,7 @@ class Validator
      * Validate IP address
      *
      * @param $data
+     *
      * @return mixed
      */
     public static function ipMatcher($data)
@@ -198,6 +197,7 @@ class Validator
      * Validate Email
      *
      * @param $data
+     *
      * @return mixed
      */
     public static function emailMatcher($data)
@@ -210,6 +210,7 @@ class Validator
      * Validate URL
      *
      * @param $data
+     *
      * @return mixed
      */
     public static function urlMatcher($data)
@@ -222,6 +223,7 @@ class Validator
      * Validate Int Type
      *
      * @param $data
+     *
      * @return bool
      */
     public static function intMatcher($data)
@@ -234,6 +236,7 @@ class Validator
      * Validate Float Type
      *
      * @param $data
+     *
      * @return bool
      */
     public static function floatMatcher($data)
@@ -246,6 +249,7 @@ class Validator
      * Validate Array Type
      *
      * @param $data
+     *
      * @return bool
      */
     public static function arrayMatcher($data)
@@ -258,6 +262,7 @@ class Validator
      * Validate Number
      *
      * @param $data
+     *
      * @return bool
      */
     public static function numberMatcher($data)
@@ -270,6 +275,7 @@ class Validator
      *
      * @param $data
      * @param $target
+     *
      * @return bool
      */
     public static function ltMatcher($data, $target)
@@ -282,6 +288,7 @@ class Validator
      *
      * @param $data
      * @param $target
+     *
      * @return bool
      */
     public static function eltMatcher($data, $target)
@@ -294,6 +301,7 @@ class Validator
      *
      * @param $data
      * @param $target
+     *
      * @return bool
      */
     public static function gtMatcher($data, $target)
@@ -306,6 +314,7 @@ class Validator
      *
      * @param $data
      * @param $target
+     *
      * @return bool
      */
     public static function egtMatcher($data, $target)
@@ -318,6 +327,7 @@ class Validator
      *
      * @param $data
      * @param $target
+     *
      * @return bool
      */
     public static function eqMatcher($data, $target)
@@ -330,6 +340,7 @@ class Validator
      *
      * @param $data
      * @param $target
+     *
      * @return bool
      */
     public static function neqMatcher($data, $target)
@@ -340,8 +351,9 @@ class Validator
     /**
      * Validate in section
      *
-     * @param $data
+     * @param       $data
      * @param array $target
+     *
      * @return bool
      */
     public static function inMatcher($data, array $target)
@@ -355,6 +367,7 @@ class Validator
      *
      * @param $data
      * @param $function
+     *
      * @return bool|mixed
      */
     public static function callbackMatcher($data, $function)
@@ -370,6 +383,7 @@ class Validator
      * 获取字段数据
      *
      * @param $field
+     *
      * @return null
      */
     public static function getField($field)
@@ -382,12 +396,13 @@ class Validator
      * 获取校验错误信息
      *
      * @param null $filed
+     *
      * @return array
      */
     public static function error($filed = NULL)
     {
         if (is_string($filed)) {
-            $error = & self::$error[$filed];
+            $error = &self::$error[$filed];
 
             return $error;
         }
@@ -400,12 +415,13 @@ class Validator
      * 获取校验出现的第一条错误信息
      *
      * @param bool $intact
+     *
      * @return mixed
      */
     public static function firstError($intact = false)
     {
         if (count(self::$error)) {
-            return  array_shift(self::$error);
+            return array_shift(self::$error);
         }
 
         return NULL;
