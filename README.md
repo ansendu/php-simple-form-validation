@@ -1,7 +1,7 @@
-php-simple-form-validation
+php-simple-form-Validator
 ==========================
 
-PHP Simple Form Validation
+PHP Simple Form Validator
 
 ##Requirements
 php5.3+
