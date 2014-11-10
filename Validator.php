@@ -15,7 +15,6 @@ class Validator
      */
     private static $filter = array();
 
-
     /**
      * Multi error list
      *
@@ -23,12 +22,10 @@ class Validator
      */
     private static $error = array();
 
-
     /**
      * @var
      */
     private static $_data;
-
 
     /**
      * @param array $filter
@@ -37,7 +34,6 @@ class Validator
     {
         self::$filter += $filter;
     }
-
 
     /**
      * Execure Validate
@@ -51,32 +47,30 @@ class Validator
     {
         self::$_data = $data;
 
-        count($filter) && self::registerFilter($filter);
+        $filter && self::registerFilter($filter);
 
         foreach (self::$filter as $detail) {
 
-            // var_dump($detail);
+            //var_dump($detail);
 
-            $field = array_shift($detail); //First item as field
-            $rules = explode(',', array_shift($detail)); //Second item as rules
+            $field = &$detail[0];//First item as field
+            $rules = &$detail[1];//Second item as rules
+            $rules = explode(',', $rules);
             //..
-            $error = (string)array_pop($detail); //Last item as error message
+            $error = $detail[count($detail) - 1];//Last item as error message
 
-            if (isset($data[$field])) {
+            $field_exists = &$data[$field];
+            if ($field_exists) {
                 $result = false;
                 foreach ($rules as $rule_type) {
-                    if ($result = self::validate($rule_type, $detail + array(), $data[$field])) {
-                        continue;
-                    } else {
+                    //Third item as params1
+                    if (!$result = self::validate($rule_type, $detail[2], $data[$field])) {
                         $result = false;
                         break;
                     }
                 }
 
-                if ($result) {
-                    continue;
-                } else {
-                    //var_dump($error);
+                if (!$result) {
                     self::$error[$field] = $error;
                 }
             } else {
@@ -89,7 +83,6 @@ class Validator
         return !count(self::$error);
     }
 
-
     /**
      * Validate Filter
      *
@@ -99,87 +92,36 @@ class Validator
      *
      * @return bool|mixed
      */
-    public static function validate($rule_type, $matcher, $data)
+    public static function validate($rule_type, $match_args, $data)
     {
-
-        $third = array_shift($matcher); //Third item as params1
-
-        switch (strtolower($rule_type)) {
-            case 'regexp':
-                return self::regexpMatcher($data, $third);
-                break;
-            case 'ip':
-                return self::ipMatcher($data);
-                break;
-            case 'email':
-                return self::emailMatcher($data);
-                break;
-            case 'url':
-                return self::urlMatcher($data);
-                break;
-            case 'int':
-                return self::intMatcher($data);
-                break;
-            case 'float':
-                return self::floatMatcher($data);
-                break;
-            case 'array':
-                return self::arrayMatcher($data);
-                break;
-            case 'number':
-                return self::numberMatcher($data);
-                break;
-            case 'lt':
-                return self::ltMatcher($data, $third);
-                break;
-            case 'elt':
-                return self::eltMatcher($data, $third);
-                break;
-            case 'gt':
-                return self::gtMatcher($data, $third);
-                break;
-            case 'egt':
-                return self::egtMatcher($data, $third);
-                break;
-            case 'eq':
-                return self::eqMatcher($data, $third);
-                break;
-            case 'neq':
-                return self::neqMatcher($data, $third);
-                break;
-            case 'in':
-                return self::inMatcher($data, $third);
-                break;
-            case 'required':
-                return !is_null($data);
-                break;
-            case 'callback':
-                return self::callbackMatcher($data, $third);
-                break;
-            case 'inner_eq':
-                $filed_data = &self::$_data[$third];
-                return $data == $filed_data;
-            case 'inner_neq':
-                $filed_data = &self::$_data[$third];
-                return $data != $filed_data;
-            default:
-                return false;
+        $func = strtolower($rule_type) . "Matcher";//join
+        if (method_exists(__CLASS__, $func)) {
+            return self::$func($data, $match_args);
         }
 
+        return false;
     }
 
+    /**
+     * @param $data
+     *
+     * @return bool
+     */
+    public static function requiredMatcher($data)
+    {
+        return !is_null($data);
+    }
 
     /**
      * @param $data
      * @param $pattern
      *
-     * @return mixed
+     * @return bool
      */
     public static function regexpMatcher($data, $pattern)
     {
         return preg_match($pattern, $data);
     }
-
 
     /**
      * Validate IP address
@@ -205,7 +147,6 @@ class Validator
         return filter_var($data, FILTER_VALIDATE_EMAIL);
     }
 
-
     /**
      * Validate URL
      *
@@ -217,7 +158,6 @@ class Validator
     {
         return filter_var($data, FILTER_VALIDATE_URL);
     }
-
 
     /**
      * Validate Int Type
@@ -231,7 +171,6 @@ class Validator
         return is_int($data);
     }
 
-
     /**
      * Validate Float Type
      *
@@ -244,7 +183,6 @@ class Validator
         return is_float($data);
     }
 
-
     /**
      * Validate Array Type
      *
@@ -256,7 +194,6 @@ class Validator
     {
         return is_array($data);
     }
-
 
     /**
      * Validate Number
@@ -361,7 +298,6 @@ class Validator
         return in_array($data, $target);
     }
 
-
     /**
      * Custom callback function
      *
@@ -388,9 +324,8 @@ class Validator
      */
     public static function getField($field)
     {
-        return isset(self::$_data[$field]) ? self::$_data[$field] : NULL;
+        return isset(self::$_data[$field]) ? self::$_data[$field] :NULL;
     }
-
 
     /**
      * 获取校验错误信息
@@ -399,7 +334,7 @@ class Validator
      *
      * @return array
      */
-    public static function error($filed = NULL)
+    public static function getAllError($filed = NULL)
     {
         if (is_string($filed)) {
             $error = &self::$error[$filed];
@@ -410,15 +345,12 @@ class Validator
         return self::$error;
     }
 
-
     /**
      * 获取校验出现的第一条错误信息
      *
-     * @param bool $intact
-     *
      * @return mixed
      */
-    public static function firstError($intact = false)
+    public static function getError()
     {
         if (count(self::$error)) {
             return array_shift(self::$error);
