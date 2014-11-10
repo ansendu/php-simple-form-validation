@@ -157,9 +157,9 @@ $data = array(
 );
 
 //开始校验
-if (!Validation::execute($data, $filter)) {
-    var_dump(Validation::error());  //获取所有错误信息
-    var_dump(Validation::firstError());   //获取第一条错误信息
+if (!Validator::execute($data, $filter)) {
+    var_dump(Validator::error());  //获取所有错误信息
+    var_dump(Validator::firstError());   //获取第一条错误信息
 }
 
 ```
