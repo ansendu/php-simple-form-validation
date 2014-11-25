@@ -269,7 +269,7 @@ class Validator
      */
     public static function eqMatcher($data, $target)
     {
-        return $data >= $target;
+        return $data == $target;
     }
 
     /**
@@ -282,7 +282,7 @@ class Validator
      */
     public static function neqMatcher($data, $target)
     {
-        return $data >= $target;
+        return $data != $target;
     }
 
     /**
